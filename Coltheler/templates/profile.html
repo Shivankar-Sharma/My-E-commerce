@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Profile details</h4>
+                  <form class="form-sample" action="{% url 'profile' %}" method="post">
+                      {% csrf_token %}
+                    <p class="card-description">
+                      Personal info
+                    </p>
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                            <div class=" user-image">
+                                <img src="{{ profile_pic.url }}" height="120" width="120" style="border-radius: 100px">
+                                <button class="file-upload-browse btn btn-primary" onclick="uploadImage()" style="margin-left:40px" type="button">Upload New</button>
+                                <div id="response"></div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">First Name</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="firstname" class="form-control" placeholder="Enter your first name here" value="{{ firstname|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Last Name</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="lastname" class="form-control" placeholder="Enter your last name here" value="{{ lastname|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Email</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="email" class="form-control" placeholder="Enter your email here" value="{{ email|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Password</label>
+                          <div class="col-sm-9">
+                            <input type="password" name="password" id="password" onblur="storePassword()" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Phone Number</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="phonenumber" class="form-control" placeholder="Enter your phone number here" value="{{ phone|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Repeat Password</label>
+                          <div class="col-sm-9">
+                              <span id="passwordmessage"></span>
+                            <input type="password" name="repeatpassword" id="repeatpassword" oninput="checkPassword()" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="card-description">
+                      Address
+                    </p>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Address 1</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="address1" class="form-control" placeholder="Enter your address here" value="{{ address1|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">State</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="state" class="form-control" placeholder="Enter your state here" value="{{ state|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Address 2</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="address2" class="form-control" placeholder="Enter your address here" value="{{ address2|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Postcode</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="postcode" class="form-control" placeholder="Enter your postcode here" value="{{ zipcode|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">City</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="city" class="form-control" placeholder="Enter your city here" value="{{ city|default_if_none:'' }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="row">
+                          <div class="col-md-12">
+                            <button class="btn btn-primary" id="form_button" style="float:right" type="submit">Save</button>
+                          </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <script>
+          function storePassword() {
+            const password = document.getElementById('password');
+          }
+
+          function checkPassword() {
+            const repeatPassword = document.getElementById('repeatpassword');
+            passwordMessage = document.getElementById('passwordmessage');
+            passwordMessage.innerHTML = "";
+            button = document.getElementById('form_button');
+            if (password.value != repeatPassword.value) {
+                console.log('password is incorrect');
+                passwordMessage.style.color = 'red';
+                passwordMessage.append("Password didn't match!");
+                button.disabled = true;
+            } else {
+                console.log('password matched');
+                passwordMessage.style.color = 'green';
+                passwordMessage.append("Password matched!");
+                button.disabled = false;
+            }
+          }
+
+          function uploadImage() {
+            let fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "image/*"; // restrict to images
+
+            // Trigger file selector dialog
+            fileInput.click();
+
+            // Handle file selection
+            fileInput.onchange = function () {
+                let file = fileInput.files[0];
+                if (!file) return;
+
+                let formData = new FormData();
+                formData.append("image", file);
+
+                $.ajax({
+                    url: "upload-image",   // Django endpoint
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    success: function (response) {
+                        document.getElementById("response").innerText = "Upload successful!";
+                        console.log("Server response:", response);
+                    },
+                    error: function (xhr, status, error) {
+                        document.getElementById("response").innerText = "Upload failed!";
+                        console.error("Error:", error);
+                    }
+                });
+            }
+          }
+
+          // Helper function for CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== "") {
+                    let cookies = document.cookie.split(";");
+                    for (let i = 0; i < cookies.length; i++) {
+                        let cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+      </script>
+{% endblock %}

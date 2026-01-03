@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6" style="display: flex;">
+                        <h4 class="card-title">Products</h4>
+                    </div>
+                    <div class="col-6" style="display: flex; justify-content: flex-end;">
+                        <a href="{% url 'product-create' %}" type="button" class="btn btn-info font-weight-bold">+ Create New</a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>UPC</th>
+                          <th>Product Code</th>
+                          <th>List Price</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for product in products %}
+                            <tr>
+                              <td>{{ product.upc }}</td>
+                              <td>{{ product.product_code_other }}</td>
+                              <td>{{ product.list_price }}</td>
+                              <td>
+                                  <a href="{% url 'product-update' product.product_code_other %}" type="button" class="btn btn-info font-weight-bold">Edit</a>
+                                <a href="{% url 'product-delete' product.product_code_other %}" type="button" class="btn btn-danger font-weight-bold">Delete</a>
+                              </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                              <td>No Products Found.</td>
+                            </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Product details</h4>
+                    {% if product and product.product_code_other %}
+                        <form class="form-sample" action="{% url 'product-update' product.product_code_other %}" method="POST">
+                    {% else %}
+                        <form class="form-sample" action="{% url 'product-create' %}" method="POST">
+                    {% endif %}
+                      {% csrf_token %}
+                      <p class="card-description">
+                      Basic Info
+                    </p>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">upc</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="upc" class="form-control" value="{{ product.upc }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Product code</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="product_code" class="form-control" value="{{ product.product_code_other }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Variant Name</label>
+                          <div class="col-sm-9">
+                            <textarea rows="4" name="variant_name" class="form-control">{{ product.variant_name }}</textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Template Name</label>
+                          <div class="col-sm-9">
+                            <textarea rows="4" name="template_name" class="form-control">{{ product.template_name }}</textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Style Ranking</label>
+                          <div class="col-sm-9">
+                              <select name="style_ranking" class="form-control" value="{{ product.style_ranking.pk|default_if_none:'empty' }}"> {{ product.style_ranking.value|default_if_none:'empty' }}
+                                  {% if options and options.STYLE_RANKING %}
+                                    {% for option in options.STYLE_RANKING %}
+                                      <option value="{{ option.option_id }}">{{ option.option_value }}</option>
+                                    {% endfor %}
+                                  {% endif %}
+                              </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">List Price</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="list_price" class="form-control" value="{{ product.list_price }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Wholesale Price</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="wholesale_price" class="form-control" value="{{ product.wholesale_price }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Current Price</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="current_price" class="form-control" value="{{ product.current_price }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Manual</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="manual" class="form-control" value="{{ product.manual }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Cost Price Method</label>
+                          <div class="col-sm-9">
+                            <select name="cost_price_method" class="form-control" value="{{ product.cost_price_method|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Price Method</label>
+                          <div class="col-sm-9">
+                            <select name="price_method" class="form-control" value="{{ product.price_method|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Lifecycle</label>
+                          <div class="col-sm-9">
+                            <select name="lifecycle" class="form-control" value="{{ product.lifecycle|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Age Range</label>
+                          <div class="col-sm-9">
+                            <select name="age_range" class="form-control" value="{{ product.age_range|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Prebook</label>
+                          <div class="col-sm-9">
+                            <input type="checkbox" name="prebook" class="form-control" {% if product.prebook %}checked{% endif %} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Tax Code</label>
+                          <div class="col-sm-9">
+                            <select name="tax_code" class="form-control" value="{{ product.tax_code|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Height</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="height" class="form-control" value="{{ product.height }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Length</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="length" class="form-control" value="{{ product.length }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Weight</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="weight" class="form-control" value="{{ product.weight }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Width</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="width" class="form-control" value="{{ product.width }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Dimension UOM Name</label>
+                          <div class="col-sm-9">
+                            <select name="dimension_uom_name" class="form-control" value="{{ product.dimension_uom_name|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Weight UOM Name</label>
+                          <div class="col-sm-9">
+                            <select name="weight_uom_name" class="form-control" value="{{ product.weight_uom_name|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">HS Code</label>
+                          <div class="col-sm-9">
+                            <select name="hs_code" class="form-control" value="{{ product.hs_code|default:'empty' }}">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Custom Description</label>
+                          <div class="col-sm-9">
+                            <textarea rows="4" name="custom_description" class="form-control">{{ product.custom_description }}</textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Supplier Name</label>
+                          <div class="col-sm-9">
+                            <select name="supplier_name" class="form-control" value="Empty">
+                              <option value="empty">empty</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Buyer SKU</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="buyer_sku" class="form-control" value="{{ product.buyer_sku }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">NU Customer Group</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="nu_customer_group" class="form-control" value="{{ product.nu_customer_group }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Country of Origin</label>
+                          <div class="col-sm-9">
+                            <input type="text" name="country_of_origin" class="form-control" value="{{ product.country_of_origin }}" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="row">
+                          <div class="col-md-12">
+                            <button class="btn btn-primary" id="form_button" style="float:right" type="submit">Save</button>
+                          </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endblock %}
