@@ -64,12 +64,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Style Ranking</label>
                           <div class="col-sm-9">
-                              <select name="style_ranking" class="form-control" value="{{ product.style_ranking.pk|default_if_none:'empty' }}"> {{ product.style_ranking.value|default_if_none:'empty' }}
-                                  {% if options and options.STYLE_RANKING %}
-                                    {% for option in options.STYLE_RANKING %}
-                                      <option value="{{ option.option_id }}">{{ option.option_value }}</option>
-                                    {% endfor %}
-                                  {% endif %}
+                              <select name="style_ranking" class="form-control">
+                                <option value="">Select Style Ranking</option>
+                                {% if options and options.STYLE_RANKING %}
+                                  {% for option in options.STYLE_RANKING %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.style_ranking and option.option_id == product.style_ranking.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                               </select>
                           </div>
                         </div>
@@ -120,8 +125,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Cost Price Method</label>
                           <div class="col-sm-9">
-                            <select name="cost_price_method" class="form-control" value="{{ product.cost_price_method|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="cost_price_method" class="form-control">
+                              <option value="">Select Cost Price Method</option>
+                                {% if options and options.COST_METHOD %}
+                                  {% for option in options.COST_METHOD %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.cost_price_method and option.option_id == product.cost_price_method.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -130,10 +144,19 @@
                     <div class="row">
                       <div class="col-md-6">
                         <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Price Method</label>
+                          <label class="col-sm-3 col-form-label">Sales Type</label>
                           <div class="col-sm-9">
-                            <select name="price_method" class="form-control" value="{{ product.price_method|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="price_method" class="form-control">
+                              <option value="">Select Sales Type</option>
+                                {% if options and options.SALES_TYPE %}
+                                  {% for option in options.SALES_TYPE %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.price_method and option.option_id == product.price_method.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -144,8 +167,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Lifecycle</label>
                           <div class="col-sm-9">
-                            <select name="lifecycle" class="form-control" value="{{ product.lifecycle|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="lifecycle" class="form-control">
+                              <option value="">Select Lifecycle</option>
+                                {% if options and options.LIFECYCLE %}
+                                  {% for option in options.LIFECYCLE %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.lifecycle and option.option_id == product.lifecycle.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -156,8 +188,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Age Range</label>
                           <div class="col-sm-9">
-                            <select name="age_range" class="form-control" value="{{ product.age_range|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="age_range" class="form-control">
+                              <option value="">Select Age Range</option>
+                                {% if options and options.AGE_RANGE %}
+                                  {% for option in options.AGE_RANGE %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.age_range and option.option_id == product.age_range.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -178,8 +219,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Tax Code</label>
                           <div class="col-sm-9">
-                            <select name="tax_code" class="form-control" value="{{ product.tax_code|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="tax_code" class="form-control">
+                              <option value="">Select Tax Code</option>
+                                {% if options and options.TAX_CODE %}
+                                  {% for option in options.TAX_CODE %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.tax_code and option.option_id == product.tax_code.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -230,8 +280,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Dimension UOM Name</label>
                           <div class="col-sm-9">
-                            <select name="dimension_uom_name" class="form-control" value="{{ product.dimension_uom_name|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="dimension_uom_name" class="form-control">
+                              <option value="">Select Dimension UOM Name</option>
+                                {% if options and options.DIMENSIONS_UOM %}
+                                  {% for option in options.DIMENSIONS_UOM %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.dimension_uom_name and option.option_id == product.dimension_uom_name.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -242,8 +301,17 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Weight UOM Name</label>
                           <div class="col-sm-9">
-                            <select name="weight_uom_name" class="form-control" value="{{ product.weight_uom_name|default:'empty' }}">
-                              <option value="empty">empty</option>
+                            <select name="weight_uom_name" class="form-control">
+                              <option value="">Select Weight UOM Name</option>
+                                {% if options and options.WEIGHT_UOM_NAME %}
+                                  {% for option in options.WEIGHT_UOM_NAME %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.weight_uom_name and option.option_id == product.weight_uom_name.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
@@ -255,7 +323,16 @@
                           <label class="col-sm-3 col-form-label">HS Code</label>
                           <div class="col-sm-9">
                             <select name="hs_code" class="form-control" value="{{ product.hs_code|default:'empty' }}">
-                              <option value="empty">empty</option>
+                              <option value="">Select HS Code</option>
+                                {% if options and options.HS_CODES %}
+                                  {% for option in options.HS_CODES %}
+                                    <option value="{{ option.option_id }}"
+                                      {% if product.hs_code and option.option_id == product.hs_code.pk %}
+                                        selected
+                                      {% endif %}
+                                    >{{ option.option_value }}</option>
+                                  {% endfor %}
+                                {% endif %}
                             </select>
                           </div>
                         </div>
