@@ -3,10 +3,12 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import auth, User
 from django.contrib.auth import update_session_auth_hash
-from .models import UserProfile, Product, Option
+from .models import UserProfile, Product, Option, ImportJobs
 from .services.base_service import BaseService
+from .services.tasks import import_product_task
 import os
 from django.conf import settings
+from django.core.paginator import Paginator
 
 
 def login(request):
@@ -140,9 +142,12 @@ def profile_picture_upload(request):
 @login_required(login_url="/login")
 def product_listing(request):
     try:
-        product_list = Product.objects.all()
-        product_list = product_list.order_by("-id")
-        return render(request, "productList.html", {"products": product_list})
+        products_qs = Product.objects.all()
+
+        paginator = Paginator(products_qs, 50)
+        page = request.GET.get("page")
+        page_obj = paginator.get_page(page)
+        return render(request, "productList.html", {"page_obj": page_obj})
     except Exception as e:
         print(e)
 
@@ -211,10 +216,12 @@ def product_delete(request, product_code=None):
 @login_required(login_url="/login")
 def option_listing(request):
     try:
-        option_list = Option.objects.all()
-        option_list = option_list.order_by("-id")
-        print(option_list)
-        return render(request, "optionList.html", {"options": option_list})
+        options_qs = Option.objects.all()
+
+        paginator = Paginator(options_qs, 20)
+        page = request.GET.get("page")
+        page_obj = paginator.get_page(page)
+        return render(request, "optionList.html", {"page_obj": page_obj})
     except Exception as e:
         print(e)
 
@@ -264,3 +271,32 @@ def option_delete(request, option_id=None):
             option.delete()
 
     return redirect("options")
+
+
+@login_required(login_url="/login")
+def import_products(request):
+    file = request.FILES["file"]
+    upload_dir = os.path.join(settings.MEDIA_ROOT, "imports")
+    os.makedirs(upload_dir, exist_ok=True)
+
+    file_path = os.path.join(upload_dir, file.name)
+    with open(file_path, "wb+") as f:
+        for chunk in file.chunks():
+            f.write(chunk)
+
+    job = ImportJobs.objects.create(
+        file_path=file_path,
+        status="pending",
+    )
+
+    import_product_task.delay(job.pk)
+
+    return JsonResponse({"message": "Import started", "job_id": job.pk})
+
+
+@login_required(login_url="/login")
+def import_status(request, job_id=None):
+    job = ImportJobs.objects.get(pk=job_id)
+    return JsonResponse(
+        {"status": job.status, "processed": job.processed_rows, "total": job.total_rows}
+    )

@@ -91,3 +91,14 @@ class BaseService:
             return data
         except ObjectDoesNotExist:
             return None
+
+    @staticmethod
+    def set_option_data(field_name, value):
+        try:
+            option_object, _ = Option.objects.get_or_create(
+                field_name=field_name, value=value
+            )
+            return option_object
+        except Exception as e:
+            print(e)
+            return None

@@ -34,6 +34,43 @@
             <!-- page-body-wrapper ends -->
         </div>
         <!-- container-scroller -->
+
+        <!-- Import Progress Modal -->
+        <div class="modal fade" id="importProgressModal" tabindex="-1" role="dialog">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h5 class="modal-title">Importing Products</h5>
+
+                <button type="button" class="close" id="modalCloseBtn" disabled>
+                  <span>&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body">
+                <p id="progressText">Preparing import…</p>
+
+                <div class="progress">
+                  <div
+                    id="progressBar"
+                    class="progress-bar progress-bar-striped progress-bar-animated"
+                    style="width:0%">
+                    0%
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="footerCloseBtn" disabled>
+                  Close
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
     </body>
 
      <!-- base:js -->
@@ -53,4 +90,143 @@
       <!-- Custom js for this page-->
       <script src="{% static 'js/dashboard.js' %}"></script>
       <!-- End custom js for this page-->
+      <script>
+        const importStatusBaseUrl = "{% url 'import-status' 'JOB_ID_PLACEHOLDER' %}";
+        function uploadFile() {
+            let fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = ".xlsx,.xls";
+
+            // Handle file selection
+            fileInput.onchange = function() {
+                let file = fileInput.files[0];
+                if (!file) return;
+
+                let formData = new FormData();
+                formData.append("file", file);
+
+                const uploadUrl = "{% url 'import-products' %}";
+
+                $.ajax({
+                    url: uploadUrl,   // Django endpoint
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    success: function (response) {
+                        // 1️⃣ Open progress modal immediately
+                        openProgressModal();
+
+                        // 2️⃣ Start polling using job_id from backend
+                        const jobId = response.job_id;
+                        startPolling(jobId);
+
+                        console.log("Server response:", response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+            }
+
+            // trigger file dialog after binding onchange
+            fileInput.click();
+        }
+
+        // Helper function for CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                let cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function openProgressModal() {
+            $("#importProgressModal").modal({
+                backdrop: "static",
+                keyboard: false,
+                show: true
+            });
+        }
+
+        function startPolling(jobId) {
+            const uploadUrl = importStatusBaseUrl.replace(
+                "JOB_ID_PLACEHOLDER",
+                jobId
+            );
+            importInterval = setInterval(() => {
+                fetch(uploadUrl)
+                    .then(res => res.json())
+                    .then(updateProgressUI)
+                    .catch(err => {
+                        console.error("Polling error", err);
+                    });
+            }, 2000); // every 2 seconds
+        }
+
+        function updateProgressUI(data) {
+            const progressBar = document.getElementById("progressBar");
+            const progressText = document.getElementById("progressText");
+
+            if (data.total > 0) {
+                const percent = Math.floor((data.processed / data.total) * 100);
+                progressBar.style.width = percent + "%";
+                progressBar.innerText = percent + "%";
+                progressText.innerText =
+                    `Processed ${data.processed} of ${data.total} products`;
+            }
+
+            if (data.status === "finished") {
+                progressBar.classList.remove("progress-bar-animated");
+                progressBar.classList.add("bg-success");
+                progressText.innerText = "Import completed successfully ✅";
+                enableCloseButtons();
+                stopPolling();
+            }
+
+            if (data.status === "failed") {
+                progressBar.classList.remove("progress-bar-animated");
+                progressBar.classList.add("bg-danger");
+                progressText.innerText = "Import failed ❌";
+                enableCloseButtons();
+                stopPolling();
+            }
+        }
+
+        function enableCloseButtons() {
+            $("#modalCloseBtn").prop("disabled", false);
+            $("#footerCloseBtn").prop("disabled", false);
+        }
+
+
+        function stopPolling() {
+            clearInterval(importInterval);
+        }
+
+        function closeProgressModal() {
+            $("#importProgressModal").modal("hide");
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            $("#modalCloseBtn").on("click", function () {
+                closeProgressModal();
+            });
+
+            $("#footerCloseBtn").on("click", function () {
+                closeProgressModal();
+            });
+        });
+
+      </script>
 </html>

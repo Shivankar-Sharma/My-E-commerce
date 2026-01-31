@@ -29,6 +29,8 @@ from .views import (
     option_listing,
     option_create_update,
     option_delete,
+    import_products,
+    import_status,
 )
 
 
@@ -51,4 +53,6 @@ urlpatterns = [
     path("option-details/", option_create_update, name="option-create"),
     path("option-details/<str:option_id>/", option_create_update, name="option-update"),
     path("option-delete/<str:option_id>/", option_delete, name="option-delete"),
+    path("import-products/", import_products, name="import-products"),
+    path("import-status/<str:job_id>/", import_status, name="import-status"),
 ]

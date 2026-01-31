@@ -21,10 +21,10 @@ class UserProfile(models.Model):
 
 
 class Product(models.Model):
-    upc = models.CharField(max_length=11, unique=True)
+    upc = models.CharField(max_length=15, unique=True, null=True, blank=True)
     product_code_other = models.CharField(max_length=25, db_index=True, unique=True)
-    variant_name = models.TextField()
-    template_name = models.TextField()
+    variant_name = models.TextField(null=True, blank=True)
+    template_name = models.TextField(null=True, blank=True)
     style_ranking = models.ForeignKey(
         "Option",
         on_delete=models.PROTECT,
@@ -33,15 +33,15 @@ class Product(models.Model):
         blank=True,
     )
     list_price = models.DecimalField(
-        max_digits=4, decimal_places=2, null=True, blank=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
     wholesale_price = models.DecimalField(
-        max_digits=4, decimal_places=2, null=True, blank=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
     current_price = models.DecimalField(
-        max_digits=4, decimal_places=2, null=True, blank=True
+        max_digits=10, decimal_places=2, null=True, blank=True
     )
-    manual = models.CharField(max_length=5)
+    manual = models.CharField(max_length=5, null=True, blank=True)
     cost_price_method = models.ForeignKey(
         "Option",
         on_delete=models.PROTECT,
@@ -78,10 +78,10 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    height = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    length = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    width = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
-    weight = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
+    height = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    length = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    width = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    weight = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     dimension_uom_name = models.ForeignKey(
         "Option",
         on_delete=models.PROTECT,
@@ -103,13 +103,13 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    custom_description = models.TextField()
+    custom_description = models.TextField(null=True, blank=True)
     supplier_name = models.ManyToManyField(
         "Option", related_name="supplier_name_product"
     )
-    buyer_sku = models.CharField(max_length=10)
-    nu_customer_group = models.CharField(max_length=10)
-    country_of_origin = models.CharField(max_length=10)
+    buyer_sku = models.CharField(max_length=10, null=True, blank=True)
+    nu_customer_group = models.CharField(max_length=10, null=True, blank=True)
+    country_of_origin = models.CharField(max_length=10, null=True, blank=True)
 
 
 class Option(models.Model):
@@ -124,3 +124,20 @@ class Option(models.Model):
 
     def __str__(self):
         return f"{self.field_name}: {self.value}"
+
+
+class ImportJobs(models.Model):
+    STATIC_CHOICES = (
+        ("pending", "Pending"),
+        ("running", "Running"),
+        ("finished", "Finished"),
+        ("failed", "Failed"),
+    )
+
+    file_path = models.CharField(max_length=255)
+    total_rows = models.IntegerField(default=0)
+    processed_rows = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATIC_CHOICES)
+    errors = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
