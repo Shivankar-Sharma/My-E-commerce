@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card clotheler-panel-card">
+          <div class="card-body">
+            <div class="clotheler-assets-head">
+              <div>
+                <p class="clotheler-overline mb-2">MEDIA</p>
+                <h4 class="card-title mb-1">Asset Library</h4>
+                <p class="text-muted mb-0">Organize and manage uploaded files from one place.</p>
+              </div>
+              <form action="{% url 'asset-upload' %}" method="POST" enctype="multipart/form-data" class="clotheler-upload-form">
+                {% csrf_token %}
+                <div class="clotheler-file-picker">
+                  <input id="assetFileInput" type="file" name="file" class="clotheler-file-input" required>
+                  <label for="assetFileInput" class="clotheler-file-btn">Choose File</label>
+                  <span id="assetFileName" class="clotheler-file-name">No file chosen</span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Upload</button>
+              </form>
+            </div>
+
+            <div class="clotheler-assets-meta mt-3">
+              <span class="badge badge-secondary">{{ folder_items|length }} folders</span>
+              <span class="badge badge-secondary">{{ files|length }} files</span>
+              {% if is_superuser %}
+                <span class="badge badge-warning">Superuser View</span>
+              {% endif %}
+            </div>
+
+            <div class="clotheler-breadcrumb-wrap mt-3">
+              <a href="{% url 'asset-library' %}" class="clotheler-crumb">Root</a>
+              {% for crumb in breadcrumbs %}
+                <span class="clotheler-crumb-sep">/</span>
+                <a href="{% url 'asset-library' %}?path={{ crumb.path|urlencode }}" class="clotheler-crumb">{{ crumb.name }}</a>
+              {% endfor %}
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-lg-4">
+                <div class="clotheler-assets-panel">
+                  <div class="clotheler-assets-panel-title">Folders</div>
+                  {% if current_path %}
+                    <a href="{% url 'asset-library' %}{% if parent_path %}?path={{ parent_path|urlencode }}{% endif %}" class="clotheler-folder-link">
+                      <i class="icon-corner-up-left mr-2"></i> Parent Folder
+                    </a>
+                  {% endif %}
+                  {% for folder in folder_items %}
+                    <a href="{% url 'asset-library' %}?path={{ folder.path|urlencode }}" class="clotheler-folder-link">
+                      <i class="icon-folder mr-2"></i>
+                      <span>{{ folder.name }}</span>
+                    </a>
+                  {% empty %}
+                    <div class="clotheler-folder-empty">No folders in this level.</div>
+                  {% endfor %}
+                </div>
+              </div>
+
+              <div class="col-lg-8">
+                <div class="clotheler-assets-panel">
+                  <div class="clotheler-assets-panel-title">Files</div>
+                  <div class="table-responsive">
+                  <table class="table table-hover clotheler-table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        {% if is_superuser %}
+                          <th>Uploaded By</th>
+                        {% endif %}
+                        <th>Created</th>
+                        <th class="text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in files %}
+                        <tr>
+                          <td>{{ item.name }}</td>
+                          <td>{{ item.size_display }}</td>
+                          {% if is_superuser %}
+                            <td>{{ item.asset.uploaded_by.username }}</td>
+                          {% endif %}
+                          <td>{{ item.asset.created_at|date:"Y-m-d H:i" }}</td>
+                          <td class="text-right clotheler-file-actions">
+                            <a href="{% url 'asset-download' item.asset.pk %}" class="btn btn-outline-secondary btn-sm">Download</a>
+                            <form action="{% url 'asset-delete' item.asset.pk %}" method="POST" class="d-inline-block">
+                              {% csrf_token %}
+                              <input type="hidden" name="path" value="{{ current_path }}">
+                              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                            </form>
+                          </td>
+                        </tr>
+                      {% empty %}
+                        <tr>
+                          <td colspan="{% if is_superuser %}5{% else %}4{% endif %}" class="text-center text-muted">No files in this folder.</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    const input = document.getElementById("assetFileInput");
+    const nameLabel = document.getElementById("assetFileName");
+    if (!input || !nameLabel) return;
+    input.addEventListener("change", function () {
+      const fullName = input.files && input.files[0] ? input.files[0].name : "No file chosen";
+      nameLabel.textContent = fullName;
+    });
+  })();
+</script>
+{% endblock %}

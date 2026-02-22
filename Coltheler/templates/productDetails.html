@@ -1,404 +1,285 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block content %}
-    <!-- partial -->
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
-            <div class="col-12 grid-margin">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Product details</h4>
-                    {% if product and product.product_code_other %}
-                        <form class="form-sample" action="{% url 'product-update' product.product_code_other %}" method="POST">
-                    {% else %}
-                        <form class="form-sample" action="{% url 'product-create' %}" method="POST">
-                    {% endif %}
-                      {% csrf_token %}
-                      <p class="card-description">
-                      Basic Info
-                    </p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">upc</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="upc" class="form-control" value="{{ product.upc }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Product code</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="product_code" class="form-control" value="{{ product.product_code_other }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                      <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Variant Name</label>
-                          <div class="col-sm-9">
-                            <textarea rows="4" name="variant_name" class="form-control">{{ product.variant_name }}</textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Template Name</label>
-                          <div class="col-sm-9">
-                            <textarea rows="4" name="template_name" class="form-control">{{ product.template_name }}</textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                      <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Style Ranking</label>
-                          <div class="col-sm-9">
-                              <select name="style_ranking" class="form-control">
-                                <option value="">Select Style Ranking</option>
-                                {% if options and options.STYLE_RANKING %}
-                                  {% for option in options.STYLE_RANKING %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.style_ranking and option.option_id == product.style_ranking.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                              </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">List Price</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="list_price" class="form-control" value="{{ product.list_price }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Wholesale Price</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="wholesale_price" class="form-control" value="{{ product.wholesale_price }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Current Price</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="current_price" class="form-control" value="{{ product.current_price }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Manual</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="manual" class="form-control" value="{{ product.manual }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Cost Price Method</label>
-                          <div class="col-sm-9">
-                            <select name="cost_price_method" class="form-control">
-                              <option value="">Select Cost Price Method</option>
-                                {% if options and options.COST_METHOD %}
-                                  {% for option in options.COST_METHOD %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.cost_price_method and option.option_id == product.cost_price_method.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Sales Type</label>
-                          <div class="col-sm-9">
-                            <select name="price_method" class="form-control">
-                              <option value="">Select Sales Type</option>
-                                {% if options and options.SALES_TYPE %}
-                                  {% for option in options.SALES_TYPE %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.price_method and option.option_id == product.price_method.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Lifecycle</label>
-                          <div class="col-sm-9">
-                            <select name="lifecycle" class="form-control">
-                              <option value="">Select Lifecycle</option>
-                                {% if options and options.LIFECYCLE %}
-                                  {% for option in options.LIFECYCLE %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.lifecycle and option.option_id == product.lifecycle.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Age Range</label>
-                          <div class="col-sm-9">
-                            <select name="age_range" class="form-control">
-                              <option value="">Select Age Range</option>
-                                {% if options and options.AGE_RANGE %}
-                                  {% for option in options.AGE_RANGE %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.age_range and option.option_id == product.age_range.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Prebook</label>
-                          <div class="col-sm-9">
-                            <input type="checkbox" name="prebook" class="form-control" {% if product.prebook %}checked{% endif %} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Tax Code</label>
-                          <div class="col-sm-9">
-                            <select name="tax_code" class="form-control">
-                              <option value="">Select Tax Code</option>
-                                {% if options and options.TAX_CODE %}
-                                  {% for option in options.TAX_CODE %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.tax_code and option.option_id == product.tax_code.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Height</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="height" class="form-control" value="{{ product.height }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Length</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="length" class="form-control" value="{{ product.length }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Weight</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="weight" class="form-control" value="{{ product.weight }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Width</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="width" class="form-control" value="{{ product.width }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Dimension UOM Name</label>
-                          <div class="col-sm-9">
-                            <select name="dimension_uom_name" class="form-control">
-                              <option value="">Select Dimension UOM Name</option>
-                                {% if options and options.DIMENSIONS_UOM %}
-                                  {% for option in options.DIMENSIONS_UOM %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.dimension_uom_name and option.option_id == product.dimension_uom_name.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Weight UOM Name</label>
-                          <div class="col-sm-9">
-                            <select name="weight_uom_name" class="form-control">
-                              <option value="">Select Weight UOM Name</option>
-                                {% if options and options.WEIGHT_UOM_NAME %}
-                                  {% for option in options.WEIGHT_UOM_NAME %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.weight_uom_name and option.option_id == product.weight_uom_name.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">HS Code</label>
-                          <div class="col-sm-9">
-                            <select name="hs_code" class="form-control" value="{{ product.hs_code|default:'empty' }}">
-                              <option value="">Select HS Code</option>
-                                {% if options and options.HS_CODES %}
-                                  {% for option in options.HS_CODES %}
-                                    <option value="{{ option.option_id }}"
-                                      {% if product.hs_code and option.option_id == product.hs_code.pk %}
-                                        selected
-                                      {% endif %}
-                                    >{{ option.option_value }}</option>
-                                  {% endfor %}
-                                {% endif %}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Custom Description</label>
-                          <div class="col-sm-9">
-                            <textarea rows="4" name="custom_description" class="form-control">{{ product.custom_description }}</textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Supplier Name</label>
-                          <div class="col-sm-9">
-                            <select name="supplier_name" class="form-control" value="Empty">
-                              <option value="empty">empty</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Buyer SKU</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="buyer_sku" class="form-control" value="{{ product.buyer_sku }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">NU Customer Group</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="nu_customer_group" class="form-control" value="{{ product.nu_customer_group }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Country of Origin</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="country_of_origin" class="form-control" value="{{ product.country_of_origin }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                      <div class="row">
-                          <div class="col-md-12">
-                            <button class="btn btn-primary" id="form_button" style="float:right" type="submit">Save</button>
-                          </div>
-                    </div>
-                  </form>
-                </div>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <div class="clotheler-table-head mb-3">
+              <div>
+                <p class="clotheler-overline mb-2">CATALOG</p>
+                <h4 class="card-title mb-0">Product Details</h4>
               </div>
             </div>
+
+            {% if product and product.product_code_other %}
+              <form class="clotheler-compact-form" action="{% url 'product-update' product.product_code_other %}" method="POST">
+            {% else %}
+              <form class="clotheler-compact-form" action="{% url 'product-create' %}" method="POST">
+            {% endif %}
+              {% csrf_token %}
+
+              {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+              {% endif %}
+
+              <p class="clotheler-section-title">Core Information</p>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>UPC</label>
+                    <input type="text" name="upc" class="form-control" value="{{ product.upc|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Product Code</label>
+                    <input type="text" name="product_code" class="form-control" value="{{ product.product_code_other|default_if_none:'' }}" {% if product and product.product_code_other %}readonly{% endif %} />
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Variant Name</label>
+                    <textarea rows="2" name="variant_name" class="form-control">{{ product.variant_name|default_if_none:'' }}</textarea>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Template Name</label>
+                    <textarea rows="2" name="template_name" class="form-control">{{ product.template_name|default_if_none:'' }}</textarea>
+                  </div>
+                </div>
+              </div>
+
+              <p class="clotheler-section-title">Pricing & Method</p>
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Style Ranking</label>
+                    <select name="style_ranking" class="form-control">
+                      <option value="">Select Style Ranking</option>
+                      {% if options and options.STYLE_RANKING %}
+                        {% for option in options.STYLE_RANKING %}
+                          <option value="{{ option.option_id }}" {% if product.style_ranking and option.option_id == product.style_ranking.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>List Price</label>
+                    <input type="number" step="0.01" min="0" name="list_price" class="form-control" value="{{ product.list_price|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Wholesale Price</label>
+                    <input type="number" step="0.01" min="0" name="wholesale_price" class="form-control" value="{{ product.wholesale_price|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Current Price</label>
+                    <input type="number" step="0.01" min="0" name="current_price" class="form-control" value="{{ product.current_price|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Manual</label>
+                    <input type="text" name="manual" class="form-control" value="{{ product.manual|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Cost Price Method</label>
+                    <select name="cost_price_method" class="form-control">
+                      <option value="">Select Cost Price Method</option>
+                      {% if options and options.COST_METHOD %}
+                        {% for option in options.COST_METHOD %}
+                          <option value="{{ option.option_id }}" {% if product.cost_price_method and option.option_id == product.cost_price_method.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Sales Type</label>
+                    <select name="price_method" class="form-control">
+                      <option value="">Select Sales Type</option>
+                      {% if options and options.SALES_TYPE %}
+                        {% for option in options.SALES_TYPE %}
+                          <option value="{{ option.option_id }}" {% if product.price_method and option.option_id == product.price_method.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Lifecycle</label>
+                    <select name="lifecycle" class="form-control">
+                      <option value="">Select Lifecycle</option>
+                      {% if options and options.LIFECYCLE %}
+                        {% for option in options.LIFECYCLE %}
+                          <option value="{{ option.option_id }}" {% if product.lifecycle and option.option_id == product.lifecycle.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Age Range</label>
+                    <select name="age_range" class="form-control">
+                      <option value="">Select Age Range</option>
+                      {% if options and options.AGE_RANGE %}
+                        {% for option in options.AGE_RANGE %}
+                          <option value="{{ option.option_id }}" {% if product.age_range and option.option_id == product.age_range.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Tax Code</label>
+                    <select name="tax_code" class="form-control">
+                      <option value="">Select Tax Code</option>
+                      {% if options and options.TAX_CODE %}
+                        {% for option in options.TAX_CODE %}
+                          <option value="{{ option.option_id }}" {% if product.tax_code and option.option_id == product.tax_code.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group mt-lg-4">
+                    <div class="d-flex align-items-center pt-2">
+                      <label class="mb-0 mr-2">Prebook</label>
+                      <input type="checkbox" name="prebook" value="True" {% if product.prebook %}checked{% endif %}>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p class="clotheler-section-title">Dimensions & Compliance</p>
+              <div class="row">
+                <div class="col-lg-3">
+                  <div class="form-group">
+                    <label>Height</label>
+                    <input type="number" step="0.01" min="0" name="height" class="form-control" value="{{ product.height|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group">
+                    <label>Length</label>
+                    <input type="number" step="0.01" min="0" name="length" class="form-control" value="{{ product.length|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group">
+                    <label>Width</label>
+                    <input type="number" step="0.01" min="0" name="width" class="form-control" value="{{ product.width|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <div class="form-group">
+                    <label>Weight</label>
+                    <input type="number" step="0.01" min="0" name="weight" class="form-control" value="{{ product.weight|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Dimension UOM Name</label>
+                    <select name="dimension_uom_name" class="form-control">
+                      <option value="">Select Dimension UOM Name</option>
+                      {% if options and options.DIMENSIONS_UOM %}
+                        {% for option in options.DIMENSIONS_UOM %}
+                          <option value="{{ option.option_id }}" {% if product.dimension_uom_name and option.option_id == product.dimension_uom_name.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Weight UOM Name</label>
+                    <select name="weight_uom_name" class="form-control">
+                      <option value="">Select Weight UOM Name</option>
+                      {% if options and options.WEIGHT_UOM_NAME %}
+                        {% for option in options.WEIGHT_UOM_NAME %}
+                          <option value="{{ option.option_id }}" {% if product.weight_uom_name and option.option_id == product.weight_uom_name.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>HS Code</label>
+                    <select name="hs_code" class="form-control">
+                      <option value="">Select HS Code</option>
+                      {% if options and options.HS_CODES %}
+                        {% for option in options.HS_CODES %}
+                          <option value="{{ option.option_id }}" {% if product.hs_code and option.option_id == product.hs_code.pk %}selected{% endif %}>{{ option.option_value }}</option>
+                        {% endfor %}
+                      {% endif %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <p class="clotheler-section-title">Additional Information</p>
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Custom Description</label>
+                    <textarea rows="2" name="custom_description" class="form-control">{{ product.custom_description|default_if_none:'' }}</textarea>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label>Supplier Name</label>
+                    <select name="supplier_name" class="form-control">
+                      <option value="empty">empty</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Buyer SKU</label>
+                    <input type="text" name="buyer_sku" class="form-control" value="{{ product.buyer_sku|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>NU Customer Group</label>
+                    <input type="text" name="nu_customer_group" class="form-control" value="{{ product.nu_customer_group|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="form-group">
+                    <label>Country of Origin</label>
+                    <input type="text" name="country_of_origin" class="form-control" value="{{ product.country_of_origin|default_if_none:'' }}" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 clotheler-form-actions">
+                  <button class="btn btn-primary" id="form_button" type="submit">Save</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

@@ -9,36 +9,38 @@
           <div class="card-body">
             <div class="clotheler-table-head">
               <div>
-                <p class="clotheler-overline mb-2">CATALOG</p>
-                <h4 class="card-title mb-0">Products</h4>
+                <p class="clotheler-overline mb-2">OPERATIONS</p>
+                <h4 class="card-title mb-0">PO Templates</h4>
               </div>
-              <a href="{% url 'product-create' %}" class="btn btn-primary">+ Create New</a>
+              <a href="{% url 'po-template-details' %}" class="btn btn-primary">+ Create New</a>
             </div>
 
             <div class="table-responsive mt-4">
               <table class="table table-hover clotheler-table">
                 <thead>
                   <tr>
-                    <th>UPC</th>
-                    <th>Product Code</th>
-                    <th>List Price</th>
+                    <th>ID</th>
+                    <th>Reference</th>
+                    <th>SKU</th>
+                    <th>Delivery Date</th>
                     <th class="text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for product in page_obj %}
+                  {% for poTemplate in page_obj %}
                     <tr>
-                      <td>{{ product.upc }}</td>
-                      <td>{{ product.product_code_other }}</td>
-                      <td>${{ product.list_price }}</td>
+                      <td>{{ poTemplate.pk }}</td>
+                      <td>{{ poTemplate.reference }}</td>
+                      <td>{{ poTemplate.sku }}</td>
+                      <td>{{ poTemplate.delivery_date }}</td>
                       <td class="text-right clotheler-table-actions">
-                        <a href="{% url 'product-update' product.product_code_other %}" class="btn btn-outline-secondary btn-sm">Edit</a>
-                        <a href="{% url 'product-delete' product.product_code_other %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'po-template-details-create' poTemplate.reference poTemplate.sku %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                        <a href="{% url 'po-template-delete' poTemplate.reference poTemplate.sku %}" class="btn btn-danger btn-sm">Delete</a>
                       </td>
                     </tr>
                   {% empty %}
                     <tr>
-                      <td colspan="4" class="text-center text-muted">No products found.</td>
+                      <td colspan="5" class="text-center text-muted">No PO templates found.</td>
                     </tr>
                   {% endfor %}
                 </tbody>
@@ -51,9 +53,7 @@
               {% else %}
                 <span></span>
               {% endif %}
-
               <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-
               {% if page_obj.has_next %}
                 <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-secondary btn-sm">Next</a>
               {% else %}

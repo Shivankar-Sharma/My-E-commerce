@@ -5,7 +5,10 @@
       <!-- Required meta tags -->
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>Poshpeanut Admin</title>
+      <title>Clotheler Studio</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
       <!-- base:css -->
       <link rel="stylesheet" href="{% static 'vendors/mdi/css/materialdesignicons.min.css' %}">
       <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}">
@@ -19,10 +22,11 @@
       <!-- End plugin css for this page -->
       <!-- inject:css -->
       <link rel="stylesheet" href="{% static 'css/style.css' %}">
+      <link rel="stylesheet" href="{% static 'css/clotheler-minimal.css' %}?v=18">
       <!-- endinject -->
       <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" />
     </head>
-    <body>
+    <body class="clotheler-theme">
         <div class="container-scroller">
             {% include 'navbar.html' %}
             <div class="container-fluid page-body-wrapper">
@@ -117,10 +121,50 @@
                         "X-CSRFToken": getCookie("csrftoken")
                     },
                     success: function (response) {
-                        // 1️⃣ Open progress modal immediately
                         openProgressModal();
 
-                        // 2️⃣ Start polling using job_id from backend
+                        const jobId = response.job_id;
+                        startPolling(jobId);
+
+                        console.log("Server response:", response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    }
+                });
+            }
+
+            // trigger file dialog after binding onchange
+            fileInput.click();
+        }
+
+        function uploadPoFile() {
+            let fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = ".xlsx,.xls";
+
+            // Handle file selection
+            fileInput.onchange = function() {
+                let file = fileInput.files[0];
+                if (!file) return;
+
+                let formData = new FormData();
+                formData.append("file", file);
+
+                const uploadUrl = "{% url 'import-po-templates' %}";
+
+                $.ajax({
+                    url: uploadUrl,   // Django endpoint
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    success: function (response) {
+                        openProgressModal();
+
                         const jobId = response.job_id;
                         startPolling(jobId);
 
@@ -218,6 +262,101 @@
             $("#importProgressModal").modal("hide");
         }
 
+        function initSidebarResize() {
+            const handle = document.getElementById("sidebarResizeHandle");
+            if (!handle) return;
+            if (window.matchMedia("(max-width: 991.98px)").matches) return;
+
+            const root = document.documentElement;
+            const body = document.body;
+            const minWidth = 240;
+            const maxWidth = 420;
+            const widthKey = "clothelerSidebarWidth";
+            const expandedWidthKey = "clothelerSidebarExpandedWidth";
+            const minimizeBtn = document.querySelector('[data-toggle="minimize"]');
+
+            function applySidebarWidth(value) {
+                const width = Math.max(minWidth, Math.min(maxWidth, value));
+                root.style.setProperty("--cl-sidebar-width", width + "px");
+                localStorage.setItem(widthKey, String(width));
+            }
+
+            const savedWidth = parseInt(localStorage.getItem(widthKey), 10);
+            if (!Number.isNaN(savedWidth) && !body.classList.contains("sidebar-icon-only")) {
+                applySidebarWidth(savedWidth);
+            }
+
+            function onMouseMove(event) {
+                applySidebarWidth(event.clientX);
+            }
+
+            function onMouseUp() {
+                document.removeEventListener("mousemove", onMouseMove);
+                document.removeEventListener("mouseup", onMouseUp);
+                document.body.style.userSelect = "";
+            }
+
+            handle.addEventListener("mousedown", function (event) {
+                if (body.classList.contains("sidebar-icon-only")) return;
+                event.preventDefault();
+                document.body.style.userSelect = "none";
+                document.addEventListener("mousemove", onMouseMove);
+                document.addEventListener("mouseup", onMouseUp);
+            });
+
+            handle.addEventListener("dblclick", function () {
+                applySidebarWidth(240);
+            });
+
+            if (minimizeBtn) {
+                minimizeBtn.addEventListener("click", function () {
+                    setTimeout(function () {
+                        if (body.classList.contains("sidebar-icon-only")) {
+                            const currentWidth = parseInt(getComputedStyle(root).getPropertyValue("--cl-sidebar-width"), 10);
+                            if (!Number.isNaN(currentWidth) && currentWidth > 70) {
+                                localStorage.setItem(expandedWidthKey, String(currentWidth));
+                            }
+                        } else {
+                            const expandedWidth = parseInt(localStorage.getItem(expandedWidthKey) || localStorage.getItem(widthKey), 10);
+                            if (!Number.isNaN(expandedWidth)) {
+                                applySidebarWidth(expandedWidth);
+                            }
+                        }
+                    }, 0);
+                });
+            }
+        }
+
+        function initSidebarAutoExpandOnMenuClick() {
+            const body = document.body;
+            const minimizeBtn = document.querySelector('[data-toggle="minimize"]');
+            const collapsibleLinks = document.querySelectorAll('#sidebar .nav-link[data-toggle="collapse"]');
+            if (!minimizeBtn || !collapsibleLinks.length) return;
+
+            collapsibleLinks.forEach(function (link) {
+                link.addEventListener("click", function (event) {
+                    if (window.matchMedia("(max-width: 991.98px)").matches) return;
+                    if (!body.classList.contains("sidebar-icon-only")) return;
+
+                    event.preventDefault();
+                    const targetSelector = link.getAttribute("href");
+                    minimizeBtn.click();
+
+                    setTimeout(function () {
+                        if (!targetSelector) return;
+                        const target = document.querySelector(targetSelector);
+                        if (!target) return;
+
+                        if (window.jQuery && typeof window.jQuery(target).collapse === "function") {
+                            window.jQuery(target).collapse("show");
+                        } else {
+                            target.classList.add("show");
+                        }
+                    }, 220);
+                });
+            });
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             $("#modalCloseBtn").on("click", function () {
                 closeProgressModal();
@@ -226,6 +365,9 @@
             $("#footerCloseBtn").on("click", function () {
                 closeProgressModal();
             });
+
+            initSidebarResize();
+            initSidebarAutoExpandOnMenuClick();
         });
 
       </script>

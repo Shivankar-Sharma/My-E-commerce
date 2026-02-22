@@ -1,11 +1,36 @@
 import pandas as pd
 from celery import shared_task
-from django.db import transaction
-from ..models import Product, Option, ImportJobs
+from ..models import Product, Option, ImportJobs, PoTemplate
 from .base_service import BaseService
 from math import isnan
 
 CHUNK_SIZE = 7000
+
+
+def get_create_options(option_map, field_name, value):
+    if not value:
+        return None
+
+    field_cache = option_map.setdefault(field_name, {})
+
+    if value in field_cache:
+        return field_cache[value]
+
+    option = BaseService.set_option_data(field_name, value)
+    option_id = option.pk if option else None
+
+    field_cache[value] = option_id
+    return option_id
+
+
+def clean_decimal(val):
+    if val is None:
+        return None
+    if isinstance(val, float) and isnan(val):
+        return None
+    if isinstance(val, str) and val.strip().lower() in {"nan", "n/a", "null", ""}:
+        return None
+    return val
 
 
 @shared_task(bind=True)
@@ -120,27 +145,60 @@ def import_product_task(self, import_job_id):
         raise
 
 
-def get_create_options(option_map, field_name, value):
-    if not value:
-        return None
+@shared_task(bind=True)
+def import_po_template_task(self, import_job_id):
+    import_job = ImportJobs.objects.get(pk=import_job_id)
+    import_job.status = "running"
+    import_job.save()
 
-    field_cache = option_map.setdefault(field_name, {})
+    try:
+        df = pd.read_excel(import_job.file_path)
+        df = df.where(df.notnull(), None)
+        rows = df.to_dict("records")
+        import_job.total_rows = len(df)
+        import_job.save()
 
-    if value in field_cache:
-        return field_cache[value]
+        for row in rows:
+            references = BaseService.get_po_references(row)
+            product = Product.objects.get(product_code_other=row["STYLE SKU"])
+            for reference, data in references.items():
+                print(data["name"], row["STYLE SKU"])
+                po_template, _ = PoTemplate.objects.update_or_create(
+                    reference=data["name"],
+                    sku=row["STYLE SKU"],
+                    defaults={
+                        "reference": data["name"],
+                        "purchase_date": (
+                            pd.to_datetime(row["PO ISSUE DATE"])
+                            if row["PO ISSUE DATE"]
+                            else None
+                        ),
+                        "variant_name": product.variant_name,
+                        "sku": row["STYLE SKU"],
+                        "quantity": data["quantity"],
+                        "unit_price": row["COST"],
+                        "warehouse": "Cothler",
+                        "delivery_date": (
+                            pd.to_datetime(row["X-FACTORY DATE"])
+                            if row["X-FACTORY DATE"]
+                            else None
+                        ),
+                        "style_ranking_id": product.style_ranking_id,
+                        "reference_have_whl": data["have_whl"],
+                        "requested_shipping_date": (
+                            pd.to_datetime(row["DELIVERY DATE"])
+                            if row["DELIVERY DATE"]
+                            else None
+                        ),
+                    },
+                )
+                import_job.processed_rows += 1
+                import_job.save()
 
-    option = BaseService.set_option_data(field_name, value)
-    option_id = option.pk if option else None
-
-    field_cache[value] = option_id
-    return option_id
-
-
-def clean_decimal(val):
-    if val is None:
-        return None
-    if isinstance(val, float) and isnan(val):
-        return None
-    if isinstance(val, str) and val.strip().lower() in {"nan", "n/a", "null", ""}:
-        return None
-    return val
+        import_job.status = "finished"
+        import_job.save()
+    except Exception as e:
+        import_job.status = "failed"
+        import_job.errors = str(e)
+        import_job.save()
+        raise
