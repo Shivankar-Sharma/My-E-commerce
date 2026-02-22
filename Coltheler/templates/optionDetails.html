@@ -2,52 +2,49 @@
 {% load static %}
 
 {% block content %}
-    <!-- partial -->
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
-            <div class="col-12 grid-margin">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Option details</h4>
-                    {% if option and option.pk %}
-                        <form class="form-sample" action="{% url 'option-update' option.pk %}" method="POST">
-                    {% else %}
-                        <form class="form-sample" action="{% url 'option-create' %}" method="POST">
-                    {% endif %}
-                      {% csrf_token %}
-                      <p class="card-description">
-                      Basic Info
-                    </p>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Field Name</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="field_name" class="form-control" placeholder="Enter Field Name" value="{{ option.field_name|default_if_none:'' }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Option Value</label>
-                          <div class="col-sm-9">
-                            <input type="text" name="option_value" class="form-control" placeholder="Enter Option Value" value="{{ option.value|default_if_none:'' }}" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                          <button class="btn btn-primary" id="form_button" style="float:right" type="submit">Save</button>
-                        </div>
-                    </div>
-                  </form>
-                </div>
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <div class="clotheler-table-head mb-3">
+              <div>
+                <p class="clotheler-overline mb-2">CONFIGURATION</p>
+                <h4 class="card-title mb-0">Option Details</h4>
               </div>
             </div>
+            {% if option and option.pk %}
+              <form class="clotheler-compact-form" action="{% url 'option-update' option.pk %}" method="POST">
+            {% else %}
+              <form class="clotheler-compact-form" action="{% url 'option-create' %}" method="POST">
+            {% endif %}
+              {% csrf_token %}
+              <p class="clotheler-section-title">Basic Info</p>
+              <div class="row">
+                <div class="col-12 col-lg-6">
+                  <div class="form-group">
+                    <label>Field Name</label>
+                    <input type="text" name="field_name" class="form-control" placeholder="Enter field name" value="{{ option.field_name|default_if_none:'' }}" />
+                  </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                  <div class="form-group">
+                    <label>Option Value</label>
+                    <input type="text" name="option_value" class="form-control" placeholder="Enter option value" value="{{ option.value|default_if_none:'' }}" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 clotheler-form-actions">
+                  <button class="btn btn-primary" id="form_button" type="submit">Save</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

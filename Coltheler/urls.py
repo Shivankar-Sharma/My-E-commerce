@@ -16,43 +16,66 @@ Including another URLconf
 """
 
 from django.urls import path
-from .views import (
-    index,
-    login,
-    register,
-    logout,
-    profile,
-    profile_picture_upload,
-    product_listing,
-    product_create_update,
-    product_delete,
-    option_listing,
-    option_create_update,
-    option_delete,
-    import_products,
-    import_status,
-)
+from . import views
 
 
 urlpatterns = [
-    path("home/", index, name="home"),
-    path("login/", login, name="login"),
-    path("register/", register, name="register"),
-    path("logout/", logout, name="logout"),
-    path("profile/", profile, name="profile"),
-    path("profile/upload-image", profile_picture_upload, name="upload-image"),
-    path("products/", product_listing, name="products"),
-    path("product-details/", product_create_update, name="product-create"),
+    path("home/", views.index, name="home"),
+    path("login/", views.login, name="login"),
+    path("register/", views.register, name="register"),
+    path("logout/", views.logout, name="logout"),
+    path("profile/", views.profile, name="profile"),
+    path("profile/upload-image", views.profile_picture_upload, name="upload-image"),
+    path("products/", views.product_listing, name="products"),
+    path("product-details/", views.product_create_update, name="product-create"),
     path(
         "product-details/<str:product_code>/",
-        product_create_update,
+        views.product_create_update,
         name="product-update",
     ),
-    path("product-delete/<str:product_code>/", product_delete, name="product-delete"),
-    path("options/", option_listing, name="options"),
-    path("option-details/", option_create_update, name="option-create"),
-    path("option-details/<str:option_id>/", option_create_update, name="option-update"),
-    path("option-delete/<str:option_id>/", option_delete, name="option-delete"),
-    path("import-products/", import_products, name="import-products"),
-    path("import-status/<str:job_id>/", import_status, name="import-status"),
+    path(
+        "product-delete/<str:product_code>/",
+        views.product_delete,
+        name="product-delete",
+    ),
+    path("options/", views.option_listing, name="options"),
+    path("option-details/", views.option_create_update, name="option-create"),
+    path(
+        "option-details/<str:option_id>/",
+        views.option_create_update,
+        name="option-update",
+    ),
+    path("option-delete/<str:option_id>/", views.option_delete, name="option-delete"),
+    path("import-products/", views.import_products, name="import-products"),
+    path("imports/", views.import_jobs_listing, name="imports"),
+    path("asset-library/", views.asset_listing, name="asset-library"),
+    path("asset-library/upload/", views.asset_upload, name="asset-upload"),
+    path(
+        "asset-library/<int:asset_id>/download/",
+        views.asset_download,
+        name="asset-download",
+    ),
+    path(
+        "asset-library/<int:asset_id>/delete/",
+        views.asset_delete,
+        name="asset-delete",
+    ),
+    path("import-status/<str:job_id>/", views.import_status, name="import-status"),
+    path("po-templates/", views.po_template_listing, name="po-templates"),
+    path(
+        "po-template-details/",
+        views.po_template_create_update,
+        name="po-template-details",
+    ),
+    path(
+        "po-template-details/<str:reference>/<str:sku>/",
+        views.po_template_create_update,
+        name="po-template-details-create",
+    ),
+    path(
+        "po-template-delete/<str:reference>/<str:sku>",
+        views.po_template_delete,
+        name="po-template-delete",
+    ),
+    path("import-po-templates/", views.import_po_template, name="import-po-templates"),
 ]

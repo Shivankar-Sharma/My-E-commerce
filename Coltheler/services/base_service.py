@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
-from ..models import UserProfile, Product, Option
+from ..models import UserProfile, Product, Option, PoTemplate
+from datetime import datetime
 
 
 class BaseService:
@@ -102,3 +103,60 @@ class BaseService:
         except Exception as e:
             print(e)
             return None
+
+    @staticmethod
+    def get_po_references(row):
+        reference_array = {}
+        po_number = str(row["PO NUMBER"]).strip()
+        factory_code = str(row["FACTORY CODE"]).strip()
+
+        if not po_number or not factory_code:
+            return reference_array
+
+        reference_type = ["SHP", "PRE", "CON", "ADS", "PSS", "WHL", "RVN"]
+
+        for ref_type in reference_type:
+            if ref_type not in row:
+                continue
+
+            quantity = row[ref_type]
+            reference_name = f"H-COTH-{po_number}-{ref_type}|{factory_code}"
+            reference_array[reference_name] = {
+                "name": reference_name,
+                "quantity": quantity,
+                "have_whl": True if ref_type == "WHL" else False,
+            }
+
+        return reference_array
+
+    @staticmethod
+    def set_po_template_data(po_template, data):
+        try:
+
+            def parse_bool(value):
+                return str(value).lower() in {"true", "1", "yes", "on"}
+
+            def parse_date(value):
+                return datetime.strptime(value, "%Y-%m-%d").date() if value else None
+
+            if not po_template.reference:
+                po_template.reference = data.get("reference")
+            if not po_template.sku:
+                po_template.sku = data.get("sku")
+            po_template.purchase_date = parse_date(data.get("purchase_date"))
+            po_template.variant_name = data.get("variant_name")
+            po_template.quantity = data.get("quantity") or 0
+            po_template.unit_price = data.get("unit_price")
+            po_template.warehouse = data.get("warehouse")
+            po_template.delivery_date = parse_date(data.get("delivery_date"))
+            po_template.style_ranking_id = data.get("style_ranking") or None
+            po_template.reference_have_whl = parse_bool(data.get("reference_have_whl"))
+            po_template.requested_shipping_date = parse_date(
+                data.get("requested_shipping_date")
+            )
+            po_template.sample_po = parse_bool(data.get("sample_po"))
+            po_template.gs1_indicator = parse_bool(data.get("gs1_indicator"))
+            po_template.created_at = datetime.now()
+            po_template.updated_at = datetime.now()
+        except Exception as e:
+            return e

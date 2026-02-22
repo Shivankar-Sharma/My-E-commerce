@@ -2,64 +2,66 @@
 
 {% block content %}
 <div class="main-panel">
-    <div class="content-wrapper">
-      <div class="row">
-        <div class="col-lg-12 grid-margin stretch-card">
-          <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6" style="display: flex;">
-                        <h4 class="card-title">Options</h4>
-                    </div>
-                    <div class="col-6" style="display: flex; justify-content: flex-end;">
-                        <a href="{% url 'option-create' %}" type="button" class="btn btn-info font-weight-bold">+ Create New</a>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Option Type</th>
-                          <th>Option Value</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for option in page_obj %}
-                            <tr>
-                              <td>{{ option.id }}</td>
-                              <td>{{ option.field_name }}</td>
-                              <td>{{ option.value }}</td>
-                              <td>
-                                  <a href="{% url 'option-update' option.pk %}" type="button" class="btn btn-info font-weight-bold">Edit</a>
-                                <a href="{% url 'option-delete' option.pk %}" type="button" class="btn btn-danger font-weight-bold">Delete</a>
-                              </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                              <td>No Option Found.</td>
-                            </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                    <div class="pagination">
-                      {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                      {% endif %}
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card clotheler-panel-card">
+          <div class="card-body">
+            <div class="clotheler-table-head">
+              <div>
+                <p class="clotheler-overline mb-2">CONFIGURATION</p>
+                <h4 class="card-title mb-0">Options</h4>
+              </div>
+              <a href="{% url 'option-create' %}" class="btn btn-primary">+ Create New</a>
+            </div>
 
-                      <span>
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                      </span>
+            <div class="table-responsive mt-4">
+              <table class="table table-hover clotheler-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Option Type</th>
+                    <th>Option Value</th>
+                    <th class="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for option in page_obj %}
+                    <tr>
+                      <td>{{ option.id }}</td>
+                      <td>{{ option.field_name }}</td>
+                      <td>{{ option.value }}</td>
+                      <td class="text-right clotheler-table-actions">
+                        <a href="{% url 'option-update' option.pk %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+                        <a href="{% url 'option-delete' option.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="4" class="text-center text-muted">No options found.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
 
-                      {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}">Next</a>
-                      {% endif %}
-                    </div>
-                  </div>
+            <div class="clotheler-pagination">
+              {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-secondary btn-sm">Previous</a>
+              {% else %}
+                <span></span>
+              {% endif %}
+              <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+              {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-secondary btn-sm">Next</a>
+              {% else %}
+                <span></span>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 {% endblock %}
